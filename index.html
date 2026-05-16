@@ -21,7 +21,7 @@ window.sadjgknsdfjg='https://'+window.location.hostname;
                 window.resolveUrl = function(url) {
                     const match = url.match(/\/(\d+[^"]*)\.html/);
                     if (match) {
-                        return `https://cdn.jsdelivr.net/gh/freebuisness/html@${HASH}/${match[1]}.html?t=${Date.now()}`;
+                        return `https://gn-math.dev/html@${HASH}/${match[1]}.html?t=${Date.now()}`;
                     }
                     return originalResolve(url);
                 };
@@ -80,7 +80,7 @@ window.sadjgknsdfjg='https://'+window.location.hostname;
     }
 })();
 </script>
-<base href="https://cdn.jsdelivr.net/gh/freebuisness/gn-math-DONTDMCA@main/">
+<base href="https://gn-math.dev/">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -88,12 +88,12 @@ window.sadjgknsdfjg='https://'+window.location.hostname;
     <meta name="title" content="DYLANS-GAMES">
     <meta name="description" content="Play unblocked games like Crazy Cattle 3D and DriveMad on DYLANS-GAMES. Fast, free, no downloads-perfect for school or home.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://dylans-games.local/">
+    <meta property="og:url" content="https://gn-math.dev/">
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <meta property="og:title" content="DYLANS-GAMES">
     <meta property="og:description" content="Play unblocked games like Crazy Cattle 3D and DriveMad on DYLANS-GAMES. Fast, free, no downloads-perfect for school or home.">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://dylans-games.local/">
+    <meta name="twitter:url" content="https://gn-math.dev/">
     <meta name="twitter:title" content="DYLANS-GAMES">
     <meta name="google-adsense-account" content="ca-pub-3094133552976501">
     <meta name="ppck-ver" content="3a583f64da995abf422fabcf5da9644e" />
@@ -144,7 +144,7 @@ window.dataLayer = window.dataLayer || [];
 }
 @font-face {
     font-family: 'mc';
-    src: url('https://cdn.jsdelivr.net/gh/sealiee11/gnmathstuff@main/minecraft.otf') format('opentype');
+    src: url('https://gn-math.dev/sealiee11/gnmathstuff@main/minecraft.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
@@ -1428,16 +1428,16 @@ XMLHttpRequest.prototype.open = function(method, url) {
 };
 HTMLCanvasElement.prototype.toDataURL = function(...args) { return ""; };
 const CONFIG = {
-    zones: "https://cdn.jsdelivr.net/gh/freebuisness/assets@latest/zones.json",
-    tagsZones: "https://cdn.jsdelivr.net/gh/sealiee11/gnmathstuff@main/zones.json",
-    covers: "https://cdn.jsdelivr.net/gh/freebuisness/covers@main",
-    html: "https://cdn.jsdelivr.net/gh/freebuisness/html@main",
+    zones: "https://gn-math.dev/assets@latest/zones.json",
+    tagsZones: "https://gn-math.dev/sealiee11/gnmathstuff@main/zones.json",
+    covers: "https://gn-math.dev/covers@main",
+    html: "https://gn-math.dev/html@main",
     stats: "https://data.jsdelivr.com/v1/stats/packages/gh/gn-math/html@main/files?period="
 };
 
 fetch(window.sadjgknsdfjg+ "/commits").then(r => r.text()).then(hash => {
     if (hash && hash.trim()) {
-        CONFIG.html = `https://cdn.jsdelivr.net/gh/freebuisness/html@${hash.trim()}`;
+        CONFIG.html = `https://gn-math.dev/html@${hash.trim()}`;
     }
 }).catch(() => {
     CONFIG.html = "https://cdn.jsdelivr.net/gh/freebuisness/html@main";
@@ -1646,7 +1646,7 @@ function formatPlays(num) {
     return num.toString();
 }
 function getHtmlBaseUrl() {
-    return CONFIG.html || "https://cdn.jsdelivr.net/gh/freebuisness/html@main";
+    return CONFIG.html || "https://gn-math.dev/html@main";
 }
 function resolveUrl(u) {
     return u.replace("{COVER_URL}", CONFIG.covers).replace("{HTML_URL}", getHtmlBaseUrl());
@@ -2480,7 +2480,7 @@ function openPrivacy() {
             <p>Last updated April 17, 2025</p>
             <p>This Privacy Notice for DYLANS-GAMES ("we," "us," or "our"), describes how and why we might access, collect, store, use, and/or share ("process") your personal information when you use our services ("Services"), including when you:</p>
             <ul>
-                <li>Visit our website at <a href="https://dylans-games.local/" style="color:var(--primary)">https://dylans-games.local/</a>, or any website of ours that links to this Privacy Notice</li>
+                <li>Visit our website at <a href="https://gn-math.dev/" style="color:var(--primary)">https://gn-math.dev/</a>, or any website of ours that links to this Privacy Notice</li>
                 <li>Engage with us in other related ways, including any sales, marketing, or events</li>
             </ul>
             <p>Questions or concerns? Reading this Privacy Notice will help you understand your privacy rights and choices. We are responsible for making decisions about how your personal information is processed. If you do not agree with our policies and practices, please do not use our Services. If you still have any questions or concerns, please contact us at <a href="https://discord.gg/NAFw4ykZ7n" style="color:var(--primary)">https://discord.gg/NAFw4ykZ7n</a>.</p>
