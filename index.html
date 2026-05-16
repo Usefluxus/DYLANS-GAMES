@@ -1284,7 +1284,7 @@ body.classic-theme main {
 </div>
 <div class="nav-bar">
 <div class="nav-content" id="navContent">
-<div class="nav-link active" onclick="switchView('all')">All Games</div>
+<div class="nav-link active" onclick="switchView('all', event)">All Games</div>
 </div>
 </div>
 </header>
@@ -1310,6 +1310,7 @@ View All Games
 <div class="swiper-button-next"></div>
 <div class="swiper-button-prev"></div>
 </div>
+<div id="tagSections"></div>
 <div class="section-header">
 <div class="section-title" onclick="toggleSection('featuredGrid', this)" style="cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
 Featured Games
@@ -1430,12 +1431,14 @@ const CONFIG = {
     zones: "https://cdn.jsdelivr.net/gh/freebuisness/assets@latest/zones.json",
     tagsZones: "https://cdn.jsdelivr.net/gh/sealiee11/gnmathstuff@main/zones.json",
     covers: "https://cdn.jsdelivr.net/gh/freebuisness/covers@main",
-    html: null,
+    html: "https://cdn.jsdelivr.net/gh/freebuisness/html@main",
     stats: "https://data.jsdelivr.com/v1/stats/packages/gh/gn-math/html@main/files?period="
 };
 
 fetch(window.sadjgknsdfjg+ "/commits").then(r => r.text()).then(hash => {
-    CONFIG.html = `https://cdn.jsdelivr.net/gh/freebuisness/html@${hash.trim()}`;
+    if (hash && hash.trim()) {
+        CONFIG.html = `https://cdn.jsdelivr.net/gh/freebuisness/html@${hash.trim()}`;
+    }
 }).catch(() => {
     CONFIG.html = "https://cdn.jsdelivr.net/gh/freebuisness/html@main";
 });
@@ -1561,7 +1564,7 @@ function updateTrendingWeek() {
         el.innerHTML = trendingWeek.map(g => `
             <div class="swiper-slide">
                 <div class="game-card" onclick="event.stopPropagation(); openGame(${g.id})">
-                    <div class="star-icon ${favorites.includes(g.id) ? 'starred' : ''}" onclick="event.stopPropagation(); toggleFavorite(${g.id})">★</div>
+                    <div class="star-icon ${favorites.includes(g.id) ? 'starred' : ''}" onclick="event.stopPropagation(); toggleFavorite(${g.id}, event)">★</div>
                     <img src="${resolveUrl(g.cover)}" class="card-thumb" loading="lazy">
                     <div class="card-body">
                         <div class="card-title">${g.name}</div>
@@ -1642,8 +1645,11 @@ function formatPlays(num) {
     }
     return num.toString();
 }
+function getHtmlBaseUrl() {
+    return CONFIG.html || "https://cdn.jsdelivr.net/gh/freebuisness/html@main";
+}
 function resolveUrl(u) {
-    return u.replace("{COVER_URL}", CONFIG.covers).replace("{HTML_URL}", CONFIG.html);
+    return u.replace("{COVER_URL}", CONFIG.covers).replace("{HTML_URL}", getHtmlBaseUrl());
 }
 function toTitleCase(str) {
     return str.replace(/\w\S*/g, text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase());
@@ -1693,7 +1699,7 @@ function renderTagSections() {
             wrapperEl.innerHTML = tagGames.map(g => `
                 <div class="swiper-slide">
                     <div class="game-card" onclick="event.stopPropagation(); openGame(${g.id})">
-                        <div class="star-icon ${favorites.includes(g.id) ? 'starred' : ''}" onclick="event.stopPropagation(); toggleFavorite(${g.id})">★</div>
+                        <div class="star-icon ${favorites.includes(g.id) ? 'starred' : ''}" onclick="event.stopPropagation(); toggleFavorite(${g.id}, event)">★</div>
                         <img src="${resolveUrl(g.cover)}" class="card-thumb" loading="lazy">
                         <div class="card-body">
                             <div class="card-title">${g.name}</div>
@@ -1752,23 +1758,23 @@ function renderNavCategories() {
     const navContent = document.getElementById('navContent');
     const allLink = navContent.querySelector('.nav-link');
     navContent.innerHTML = '';
-    navContent.appendChild(allLink);
+    if (allLink) navContent.appendChild(allLink);
     const favLink = document.createElement('div');
     favLink.className = 'nav-link';
     favLink.textContent = '⭐ Favorites';
-    favLink.onclick = () => filterFavorites();
+    favLink.onclick = (e) => filterFavorites(e);
     navContent.appendChild(favLink);
     state.categories.forEach(cat => {
         const link = document.createElement('div');
         link.className = 'nav-link';
         link.textContent = toTitleCase(cat);
-        link.onclick = () => filterByCategory(cat);
+        link.onclick = (e) => filterByCategory(cat, e);
         navContent.appendChild(link);
     });
 }
-function filterFavorites() {
+function filterFavorites(e) {
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    event.target.classList.add('active');
+    if (e && e.currentTarget) e.currentTarget.classList.add('active');
     const s = document.getElementById('searchView');
     const m = document.getElementById('modernView');
     const c = document.getElementById('classicView');
@@ -1780,7 +1786,7 @@ function filterFavorites() {
     const hits = state.games.filter(g => favorites.includes(g.id));
     document.getElementById('searchResults').innerHTML = hits.map(g => `
         <div class="game-card" onclick="openGame(${g.id})">
-            <div class="star-icon starred" onclick="event.stopPropagation(); toggleFavorite(${g.id})">★</div>
+            <div class="star-icon starred" onclick="event.stopPropagation(); toggleFavorite(${g.id}, event)">★</div>
             <img src="${resolveUrl(g.cover)}" class="card-thumb" loading="lazy">
             <div class="card-body">
                 <div class="card-title">${g.name}</div>
@@ -1789,16 +1795,16 @@ function filterFavorites() {
         </div>
     `).join('');
 }
-function toggleFavorite(id) {
+function toggleFavorite(id, e) {
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     const index = favorites.indexOf(id);
-    const star = event.target;
+    const star = e?.currentTarget || e?.target || event?.target;
     
     if (index > -1) {
         favorites.splice(index, 1);
-        star.classList.remove('starred');
+        if (star) star.classList.remove('starred');
         
-        const gameCard = star.closest('.game-card');
+        const gameCard = star?.closest('.game-card');
         if (gameCard && window.location.hash === '#favorites') {
             gameCard.style.animation = 'slideOut 0.4s ease-out forwards';
             gameCard.style.overflow = 'hidden';
@@ -1812,7 +1818,7 @@ function toggleFavorite(id) {
         }
     } else {
         favorites.push(id);
-        star.classList.add('starred');
+        if (star) star.classList.add('starred');
     }
     localStorage.setItem('favorites', JSON.stringify(favorites));
 }
@@ -1867,7 +1873,7 @@ function renderGrid(id, games) {
         const delay = Math.min(index, 20) * 0.03;
         return `
         <div class="game-card" onclick="openGame(${g.id})" style="animation-delay: ${delay}s" data-index="${index}">
-            <div class="star-icon ${favorites.includes(g.id) ? 'starred' : ''}" onclick="event.stopPropagation(); toggleFavorite(${g.id})">★</div>
+            <div class="star-icon ${favorites.includes(g.id) ? 'starred' : ''}" onclick="event.stopPropagation(); toggleFavorite(${g.id}, event)">★</div>
             <img src="${resolveUrl(g.cover)}" class="card-thumb" loading="lazy">
             <div class="card-body">
                 <div class="card-title">${g.name}</div>
@@ -2036,7 +2042,7 @@ function handleSearch(q) {
     const hits = state.games.filter(g => g.name.toLowerCase().includes(q.toLowerCase()));
     r.innerHTML = hits.map(g => `
         <div class="game-card" onclick="openGame(${g.id})">
-            <div class="star-icon ${favorites.includes(g.id) ? 'starred' : ''}" onclick="event.stopPropagation(); toggleFavorite(${g.id})">★</div>
+            <div class="star-icon ${favorites.includes(g.id) ? 'starred' : ''}" onclick="event.stopPropagation(); toggleFavorite(${g.id}, event)">★</div>
             <img src="${resolveUrl(g.cover)}" class="card-thumb" loading="lazy">
             <div class="card-body">
                 <div class="card-title">${g.name}</div>
@@ -2045,15 +2051,15 @@ function handleSearch(q) {
         </div>
     `).join('');
 }
-function switchView(v) {
+function switchView(v, e) {
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    event.target.classList.add('active');
+    if (e && e.currentTarget) e.currentTarget.classList.add('active');
     document.getElementById('searchBar').value = "";
     handleSearch("");
 }
-function filterByCategory(cat) {
+function filterByCategory(cat, e) {
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    event.target.classList.add('active');
+    if (e && e.currentTarget) e.currentTarget.classList.add('active');
     const s = document.getElementById('searchView');
     const m = document.getElementById('modernView');
     const c = document.getElementById('classicView');
@@ -2065,7 +2071,7 @@ function filterByCategory(cat) {
     const hits = state.games.filter(g => g.special && g.special.includes(cat));
     document.getElementById('searchResults').innerHTML = hits.map(g => `
         <div class="game-card" onclick="openGame(${g.id})">
-            <div class="star-icon ${favorites.includes(g.id) ? 'starred' : ''}" onclick="event.stopPropagation(); toggleFavorite(${g.id})">★</div>
+            <div class="star-icon ${favorites.includes(g.id) ? 'starred' : ''}" onclick="event.stopPropagation(); toggleFavorite(${g.id}, event)">★</div>
             <img src="${resolveUrl(g.cover)}" class="card-thumb" loading="lazy">
             <div class="card-body">
                 <div class="card-title">${g.name}</div>
@@ -2100,7 +2106,7 @@ async function openGame(id) {
     if (zoneHeader) {
         zoneHeader.style.background = 'linear-gradient(135deg, #fc2651 0%, #e91e47 100%)';
     }
-    
+
     const url = new URL(window.location);
     url.searchParams.set('id', id);
     history.pushState(null, '', url.toString());
@@ -2109,22 +2115,10 @@ async function openGame(id) {
         closeZone();
         return;
     }
-    try {
-        const u = resolveUrl(g.url);
-        const r = await fetch(u + "?t=" + Date.now());
-        let h = await r.text();
-	if (h.trim().startsWith("Couldn't find the requested file")) {
-            const r2 = await fetch(g.url.replace("{COVER_URL}", CONFIG.covers).replace("{HTML_URL}", "https://cdn.jsdelivr.net/gh/freebuisness/html@main") + "?t=" + Date.now());
-            h = await r2.text();
-        }
-        f.contentDocument.open();
-     h = h.replace(/<\/html>/i, '</html>');
-f.contentDocument.write(h);
-        f.contentDocument.close();
-    } catch(e) {
-        alert("Load failed");
-        closeZone();
-    }
+
+    const u = resolveUrl(g.url);
+    f.removeAttribute('srcdoc');
+    f.src = u + (u.includes('?') ? '&' : '?') + 't=' + Date.now();
 }
 function closeZone() {
     const stats = JSON.parse(localStorage.getItem('userStats') || '{"opens": {}, "timeStart": null, "totalTime": 0}');
@@ -2151,34 +2145,25 @@ function aboutBlank() {
     const id = document.getElementById('zoneId').textContent;
     const g = state.games.find(x => x.id == id);
     if (!g) return;
-    const w = window.open('about:blank', '_blank');
     const u = resolveUrl(g.url);
-    fetch(u).then(r=>r.text()).then(h => {
-	if (h.trim().startsWith("Couldn't find the requested file")) {
-            fetch(g.url.replace("{COVER_URL}", CONFIG.covers).replace("{HTML_URL}", "https://cdn.jsdelivr.net/gh/freebuisness/html@main") + "?t=" + Date.now()).then(r=>r.text()).then(hh => {
-                w.document.open();
-              hh = hh.replace(/<\/html>/i, '</html>');
-w.document.write(hh);
-                w.document.close();
-            });
-	} else {
-            w.document.open();
-
-            w.document.write(h);
-            w.document.close();
-	}
-    });
+    const w = window.open(u, '_blank');
+    if (!w) {
+        alert('Popup blocked! Please allow popups for this site.');
+    }
 }
 function downloadZone() {
     const id = document.getElementById('zoneId').textContent;
     const g = state.games.find(x => x.id == id);
+    if (!g) return;
     const u = resolveUrl(g.url);
-    fetch(u).then(r=>r.text()).then(t => {
+    fetch(u).then(r => r.text()).then(t => {
         const b = new Blob([t], {type: "text/html"});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(b);
         a.download = g.name + ".html";
         a.click();
+    }).catch(() => {
+        alert('Unable to download the game HTML.');
     });
 }
 function openModal(t, c) {
